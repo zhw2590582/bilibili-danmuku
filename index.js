@@ -34,7 +34,7 @@ app.get("/", async function (req, res) {
       return res.status(503).send(`Failed to get danmu: ${error.message}`);
     }
   } else {
-    return res.status(404).send("Missing query: id");
+    return res.status(503).send("Missing query: id");
   }
 });
 
