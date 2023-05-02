@@ -16,17 +16,26 @@ app.use((req, res, next) => {
 });
 
 app.get("/", async function (req, res) {
-  if (!req.query.id) return res.send("Missing query: id");
-  const { data } = await (
-    await fetch(
-      `https://api.bilibili.com/x/player/pagelist?bvid=${req.query.id}&jsonp=jsonp`
-    )
-  ).json();
-  const text = await (
-    await fetch(`https://api.bilibili.com/x/v1/dm/list.so?oid=${data[0].cid}`)
-  ).text();
-  res.type("application/xml");
-  res.send(text);
+  if (req.query.id) {
+    try {
+      const { data } = await (
+        await fetch(
+          `https://api.bilibili.com/x/player/pagelist?bvid=${req.query.id}&jsonp=jsonp`
+        )
+      ).json();
+      const text = await (
+        await fetch(
+          `https://api.bilibili.com/x/v1/dm/list.so?oid=${data[0].cid}`
+        )
+      ).text();
+      res.type("application/xml");
+      res.send(text);
+    } catch (error) {
+      return res.status(503).send(`Failed to get danmu: ${error.message}`);
+    }
+  } else {
+    return res.status(404).send("Missing query: id");
+  }
 });
 
 app.listen(PORT, () => console.log(PORT));
